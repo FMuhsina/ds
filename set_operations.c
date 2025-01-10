@@ -1,153 +1,125 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include<stdio.h>
+int size,rank[50];
 
-#define MAX_UNIVERSAL_SIZE 100 // Define a reasonable maximum universal set size
-
-int MAX_SIZE;
-char universalSet[MAX_UNIVERSAL_SIZE];
-
-void bitVector(char set[], int size, int bitString[]) 
+void Make_Set(int x)
 {
-    for (int i = 0; i < MAX_SIZE; i++) 
-        bitString[i] = 0; 
-    for (int i = 0; i < size; i++) 
+    rank[x] = -1;
+}
+
+int Find_Set(int x)
+{
+    if (rank[x] == 999)
     {
-        for (int j = 0; j < MAX_SIZE; j++) 
+        printf("Element %d is not part of any set.\n", x);
+        return -1;
+    }
+
+    int index = x;
+    while (rank[index] >= 0)
+        index = rank[index];
+
+    return index;
+}
+
+void Weighted_Union(int x, int y)
+{
+    int index1 = Find_Set(x);
+    int index2 = Find_Set(y);
+
+    if (index1 ==-1 || index2 == -1)
+    {
+        printf("Union operation failed. One or both elements are not part of any set.\n");
+        return;
+    }
+
+    if (index1 == index2)
+    {
+        printf("%d and %d belong to the same disjoint set. No need for union.\n", x, y);
+    }
+    else
+    {
+        if (rank[index1] <= rank[index2])
         {
-            if (set[i] == universalSet[j]) 
-                bitString[j] = 1;
+            rank[index1] += rank[index2];
+            rank[index2] = index1;
+        }
+        else
+        {
+            rank[index2] += rank[index1];
+            rank[index1] = index2;
         }
     }
 }
 
-void displaySetArray(int set[]) 
+void Display_Set(int s)
 {
-    printf("\nSet Representation : {");
-    int first = 1;
-    for (int i = 0; i < MAX_SIZE; i++)
-    {
-        if (set[i] == 1)
-        {
-            if (!first)
-                printf(", ");
-            printf("%c", universalSet[i]);
-            first = 0;
-        }
-    }
-    printf("}\n");
-    printf("Bitvector Representation : ");
-    for (int i = 0; i < MAX_SIZE; i++)
-    {
-        printf("%d", set[i]);
-    }
+    for (int i = 0; i < s; i++)
+        printf("%d  ", rank[i]);
+    printf("\n");
 }
 
-// Function to perform Union operation on bit vector arrays
-void setUnionArray(int setA[], int setB[], int result[]) 
+int main()
 {
-    for (int i = 0; i < MAX_SIZE; i++) 
+    int size, element, element1, element2, choice;
+
+    printf("Enter the number of disjoint sets to be made: ");
+    scanf("%d", &size);
+    
+    // Initialize the rank array
+    for (int i = 0; i < size; i++)
+        rank[i] = 999;
+
+    do
     {
-        result[i] = setA[i] | setB[i];
-    }
-}
-
-// Function to perform Intersection operation on bit vector arrays
-void setIntersectionArray(int setA[], int setB[], int result[]) 
-{
-    for (int i = 0; i < MAX_SIZE; i++) 
-    {
-        result[i] = setA[i] & setB[i];
-    }
-}
-
-// Function to perform Difference operation (setA - setB) on bit vector arrays
-void setDifferenceArray(int setA[], int setB[], int result[]) 
-{
-    for (int i = 0; i < MAX_SIZE; i++) 
-    {
-        result[i] = setA[i] & (~setB[i]);
-    }
-}
-
-int main() 
-{
-    char set1[MAX_UNIVERSAL_SIZE], set2[MAX_UNIVERSAL_SIZE];
-    int s1, s2;
-    int choice, sd;
-    int bitSetA[MAX_UNIVERSAL_SIZE], bitSetB[MAX_UNIVERSAL_SIZE], result[MAX_UNIVERSAL_SIZE];
-
-    printf("Enter number of elements in the universal set: ");
-    scanf("%d", &MAX_SIZE);
-    if (MAX_SIZE > MAX_UNIVERSAL_SIZE) {
-        printf("Error: Maximum universal set size exceeded.\n");
-        return 1;
-    }
-
-    printf("Enter elements of the universal set: ");
-    for (int i = 0; i < MAX_SIZE; i++) 
-        scanf(" %c", &universalSet[i]);
-
-    // Input for Set 1
-    printf("Enter number of elements in the first set: ");
-    scanf("%d", &s1);
-    printf("Enter elements of the first set: ");
-    for (int i = 0; i < s1; i++) 
-        scanf(" %c", &set1[i]);
-
-    // Input for Set 2
-    printf("Enter number of elements in the second set: ");
-    scanf("%d", &s2);
-    printf("Enter elements of the second set: ");
-    for (int i = 0; i < s2; i++) 
-        scanf(" %c", &set2[i]);
-
-    // Convert sets to bit vectors
-    bitVector(set1, s1, bitSetA);
-    bitVector(set2, s2, bitSetB);
-
-    // Display the sets
-    printf("\nSet 1: ");
-    displaySetArray(bitSetA);
-    printf("\nSet 2: ");
-    displaySetArray(bitSetB);
-
-    // Menu for set operations
-    do {
-        printf("\n1. Union\n2. Intersection\n3. Set Difference\n4. Exit\nEnter your choice: ");
+        printf("\n1. Make set\n2. Union\n3. Find set\n4. Exit\nEnter your choice: ");
         scanf("%d", &choice);
 
-        switch (choice) 
+        switch (choice)
         {
             case 1:
-                setUnionArray(bitSetA, bitSetB, result);
-                printf("\nUnion: ");
-                displaySetArray(result);
+                printf("Enter the element to be made: ");
+                scanf("%d", &element);
+                if (element >= 0 && element < size)
+                {
+                    Make_Set(element);
+                    printf("Current Disjoint sets: ");
+                    Display_Set(size);
+                }
+                else
+                {
+                    printf("Invalid element. Please enter a value between 0 and %d.\n", size - 1);
+                }
                 break;
 
             case 2:
-                setIntersectionArray(bitSetA, bitSetB, result);
-                printf("\nIntersection: ");
-                displaySetArray(result);
+                printf("Enter the first element to be joined: ");
+                scanf("%d", &element1);
+                printf("Enter the second element to be joined: ");
+                scanf("%d", &element2);
+                if ((element1 >= 0 && element1 < size) && (element2 >= 0 && element2 < size))
+                {
+                    Weighted_Union(element1, element2);
+                    printf("Current Disjoint sets: ");
+                    Display_Set(size);
+                }
+                else
+                {
+                    printf("Invalid elements. Please enter values between 0 and %d.\n", size - 1);
+                }
                 break;
 
             case 3:
-                printf("\n1. Set 1 - Set 2\n2. Set 2 - Set 1\nEnter your choice: ");
-                scanf("%d", &sd);
-                switch (sd)
+                printf("Enter the element to find its set: ");
+                scanf("%d", &element);
+                if (element >= 0 && element < size)
                 {
-                    case 1:
-                        setDifferenceArray(bitSetA, bitSetB, result);
-                        printf("\nDifference (Set 1 - Set 2): ");
-                        displaySetArray(result);
-                        break;
-                    case 2:
-                        setDifferenceArray(bitSetB, bitSetA, result);
-                        printf("\nDifference (Set 2 - Set 1): ");
-                        displaySetArray(result);
-                        break;
-                    default:
-                        printf("Invalid choice. Please try again.\n");
+                    int setRepresentative = Find_Set(element);
+                    if (setRepresentative != -1)
+                        printf("The set representative for element %d is: %d\n", element, setRepresentative);
+                }
+                else
+                {
+                    printf("Invalid element. Please enter a value between 0 and %d.\n", size - 1);
                 }
                 break;
 
@@ -158,7 +130,8 @@ int main()
             default:
                 printf("Invalid choice. Please try again.\n");
         }
-    } while (choice != 4);
+    }
+    while (choice != 4);
 
     return 0;
 }
