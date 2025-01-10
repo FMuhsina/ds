@@ -1,102 +1,109 @@
-#include <stdio.h>
-#include <stdlib.h>
-#define SIZE 5  
-int queue[SIZE];  
-int front = -1;  
-int rear = -1;    
-int isFull() {
-	return (front == (rear + 1) % SIZE);
+#include<stdio.h>
+int front=-1,rear=-1,queue[100],size;
+void enqueue()
+{ 
+    int val;
+    if((front==0&&rear==size-1)||(front==rear+1))
+        printf("\nQueue is full.\n");
+    else
+    {
+        printf("\nEnter the value to be inserted :");  
+        scanf("%d",&val); 
+        if(front==-1)
+        {
+            front=0;
+            rear++;
+            queue[rear]=val;
+         }
+         else if(rear==size-1)
+         {
+            rear=0;
+            queue[rear]=val;
+         }
+        else
+        {
+            rear++;
+            queue[rear]=val;
+        }
+    }
 }
-int isEmpty() {
-	return (front == -1);
+void dequeue()
+{ 
+    if(front==-1)
+        printf("\nQueue is empty.\n");
+    else
+    { 
+        if(front==rear)
+        {
+            printf("Deleted Element is %d.\n",queue[front]);
+            front=-1;
+            rear=-1;
+         }
+         else if(front==size-1)
+         { 
+            printf("Deleted Element is %d.\n",queue[front]);
+            front=rear;
+         }
+        else
+        {
+            printf("Deleted Element is %d.\n",queue[front]);
+            front++;
+        }
+    }
 }
-void enqueue(int value) {
-	if (isFull()) {
-		printf("Queue is full.\n");
-	} else 
-	{
-		if (front == -1)  
-		front = 0;
-		rear = (rear + 1) % SIZE;  
-		queue[rear] = value;
-		printf("Enqueued %d.\n", value);
-	}
-}
+void traversal()  
+{  
+    int i; 
+    if(front == -1)   
+    {  
+        printf("\nQueue is empty\n");  
+    } 
+    else
+    { 
+        if(rear>=front)
+        {
+            printf("\nElements in Queue :");
+            for (i=front;i<=rear;i++)   
+                printf(" %d\n",queue[i]);  
+        }
+        else
+        {
+            printf("\nElements in Queue :\n");
+            for (i=front;i<=size-1;i++)   
+                printf(" %d\n",queue[i]); 
+            for (i=0;i<=rear;i++)   
+                printf(" %d\n",queue[i]); 
+        }
+    } 
+}  
+int main()
+{ 	
+    int choice,n=1;
+    printf("Enter the size of Queue :");
+    scanf("%d",&size);
+    do
+    {
+        printf(" 1.Traversal\n 2.ENQUEUE\n 3.DEQUEUE\n 4.Exit\n Enter your choice :");
+        scanf("%d",&choice);
+        switch(choice)
+        {
+            case 1:
+                traversal();
+                    break;
+            case 2:
+                enqueue();
+                    break;
+            case 3:
+                dequeue();
+                    break;
+            case 4:
+                return 0;
+            default:
+                printf("invalid choice");
+        }
+    }
+    while(n==1);
+    return 0;	
 
-
-int dequeue() {
-int value;
-if (isEmpty()) {
-	printf("Queue is empty.\n");
-	return -1;
-} else {
-	value = queue[front];
-	if (front == rear) {
-		front = rear = -1;
-	} else
-	{
-		front = (front + 1) % SIZE; 
-	}
-	printf("Dequeued %d.\n", value);
-	return value;
-}
-}
-
-
-void display() {
-if (isEmpty()) {
-	printf("Queue is empty.\n");
-} else {
-int i;
-printf("Queue elements are: ");
-if (rear >= front) {
-    for (i = front; i <= rear; i++)
-	printf("%d ", queue[i]);
-} else {
-	for (i = front; i < SIZE; i++)
-		printf("%d ", queue[i]);
-	for (i = 0; i <= rear; i++)
-		printf("%d ", queue[i]);
-}
-printf("\n");
-}
-}
-
-int main() {
-int choice, value;
-
-while (1) {
-
-printf("\n--- Circular Queue Menu ---\n");
-printf("1. Enqueue\n");
-printf("2. Dequeue\n");
-printf("3. Display\n");
-printf("4. Exit\n");
-printf("Enter your choice: ");
-scanf("%d", &choice);
-switch (choice) {
-    case 1:
-        printf("Enter the value to enqueue: ");
-        scanf("%d", &value);
-        enqueue(value);
-        break;
-
-    case 2:
-        dequeue();
-        break;
-
-    case 3:
-        display();
-        break;
-
-    case 4:
-        printf("Exiting program.\n");
-        exit(0);
-
-    default:
-        printf("Invalid choice! Please select a valid option.\n");
-}
 }
 
-return 0;
-}
